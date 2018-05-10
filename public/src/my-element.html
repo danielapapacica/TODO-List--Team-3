@@ -21,6 +21,7 @@
         </template>
 
         <button type="button" id="btn">Delete last item</button>
+        <button type="button" id="addbtn">Add item</button>
     </template>
     <script>
         class MyElement extends Polymer.Element {
@@ -34,8 +35,15 @@
                 super.connectedCallback();
                 this.$.btn.addEventListener("click", () => {
                     this.pop("myText");
-
                 });
+                this.$.addbtn.addEventListener("click", () => {
+                    this.push("myText", {
+                            id: 5,
+                            title: "Fifth title",
+                            description: "Fifth description"
+                        }
+                    );
+                })
             }
 
             static get properties() {
