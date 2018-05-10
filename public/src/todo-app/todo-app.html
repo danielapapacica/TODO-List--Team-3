@@ -49,22 +49,97 @@
       paper-button.disabled {
         color: white;
       }
+
+      #noteForm {
+        display: inline-block;
+        margin: 0px 5px 5px 0px;
+        border: 1px solid green;
+        padding: 10px;
+        border-radius: 15px;
+        width:auto;
+        height:auto;
+        overflow:auto;
+        
+      } 
+       .noteItem {
+        display: inline-block;
+        margin: 0px 5px 5px 0px;
+        border: 1px solid green;
+        padding: none;
+        border-radius: 7px;
+        max-width: 250px;
+        height:auto;
+        overflow:auto;
+        background-color: rgb(223, 250, 223);
+       }
+       .noteItem #noteTitle {
+         /* display:inline-block; */
+         margin: 0px;
+         padding: none;
+         border: none;
+         max-width: inherit;
+         height: auto;
+         background-color: rgb(114, 226, 114);
+         overflow:auto;
+       }
+       .noteItem #noteDescr {
+         /* display:inline-block; */
+         margin: 0px;
+         padding: none;
+         border: none;
+         max-width: inherit;
+         max-height: 250px;
+         overflow:auto;
+
+       }
+       .noteItem #noteDueDate {
+         display:inline-block;
+         margin: 0px;
+         padding: none;
+         border: none;
+         
+
+       }
+       .noteItem #noteCreatedDate {
+         display:inline-block;
+         margin: 0px;
+         padding: 5px;
+         border: none;
+         
+
+       }
+       .noteItem #noteButtons {
+         display:inline-block;
+         margin: 0px;
+         padding: 5px;
+         border: none;
+         
+
+       }
     </style>
-    <h2>Hello</h2>
-    <button id="btn">Btn</button>
+
+
+    
+    <!-- <button id="btn">Btn</button>
     <button id="addnote">Add note from backend</button>
     <br><br>
-    FORMULAR:
-    Title: <input type="text" name="title" id="title"> <br>
-    <textarea name="description" rows="10" cols="30" id="description"> Description here... </textarea> <br>
-    <input type="date" name="duedate" id="duedate"> <br>
-
-    <button type="button" name="submit" on-tap="btnAddNoteClick">Add note</button>
-
-
-    <br><br><br><br>
-    <my-element></my-element>
-    <paper-button raised class="pink">link</paper-button>
+    <br>2
+    <br><br> -->
+    
+    <div id="noteForm">
+      
+    <h4>Add a new list item</h4>
+    <input type="text" name="title" id="title" value="Item Title"> <br>
+    <textarea name="description" rows="10" cols="30" id="description">Description here... </textarea> <br>
+    Due date: <input type="date" name="duedate" id="duedate"> <br>
+    <!-- <input type="checkbox" name="pinned" id="pin" onclick="pinClick()"> Pin <br> -->
+    <button  type="button" name="pin" on-tap="pinBtnClick">Pin</button>
+    <br>
+    <button  type="button" name="submit" on-tap="btnAddNoteClick">Add note</button>
+    </div>
+    <br>
+    
+    <!-- <paper-button raised class="pink">link</paper-button> -->
 
     <firebase-app
             auth-domain="todo-list-team3.firebaseapp.com"
@@ -80,19 +155,29 @@
     <firebase-document path="notes" data="{{myDoc}}">
       <!--[[myDoc.name]] <br>-->
 
-      <firebase-query path="notes" data="{{myTodos}}">
+      <firebase-query  path="notes" data="{{myTodos}}">
 
-        <template is="dom-repeat" items="[[myTodos]]">
-          Title: [[item.title]] <br>
-          Description: [[item.description]] <br>
-          Due_date: [[item.due_date]] <br>
-          Created_data: [[item.created_date]] <br>
-          Is_pinned: [[item.pinned]] <br>
-          key: [[item.$key]] <br> 
-          <br> 
-          <button on-tap="btnClick">Delete note from backend </button> 
-          <br><br><br><br>
-          <br><br>
+          <template is="dom-repeat" items="[[myTodos]]" sort="_sort">
+            <div class="noteItem">
+          <!-- Title:  -->
+          <div id="noteTitle">[[item.title]] </div>
+          <!-- Description:  -->
+          <div id="noteDescr">[[item.description]] </div>
+          <!-- Due_date: -->
+          <div id="noteDueDate">[[item.due_date]] </div>
+          <!-- Created_date:  -->
+          <div id="noteCreatedDate">[[item.created_date]] </div>
+          <!-- Is_pinned:  -->
+          <!-- [[item.pinned]] <br> -->
+          <!-- key: [[item.$key]] <br> -->
+          <div id="noteButtons">
+          <button id="pinBtn" type="button" name="notePin" on-tap="inNotePinBtnClick">Pin</button> 
+          
+          <button id="unpinBtn" type="button" name="unpin" on-tap="unpinBtnClick">Unpin</button>
+          
+          <button id="deleteBtn" on-tap="btnClick">Delete Item</button>
+          </div>
+        </div>
         </template>
       </firebase-query>
     </firebase-document>
@@ -117,24 +202,52 @@
        * @customElement
        * @polymer
        */
+      let isPinned = false;
       class TodoApp extends Polymer.GestureEventListeners(Polymer.Element)  {
           static get is() { return 'todo-app'; }
 
           constructor () {
               super();
           }
+        
           btnClick(e) 
           { 
             firebase.database().ref("notes").child(e.model.item.$key).remove();
           }
 
+          _sort(a, b) {
+              if (a.pinned == true && b.pinned == false)
+                  return -1;
+              if (a.pinned == false && b.pinned == true)
+                  return 1;
+             if (a.created_date === b.created_date) return 0;
+                  return a.created_date > b.created_date ? -1 : 1;
+        }
+
+          pinBtnClick(e)
+          {
+            isPinned = true;
+          }
+          unpinBtnClick(e)
+          {
+            isPinned=false;
+            firebase.database().ref("notes").child(e.model.item.$key).child("pinned").set(isPinned);
+          }
+
+          inNotePinBtnClick(e)
+          {
+            isPinned = true;
+            firebase.database().ref("notes").child(e.model.item.$key).child("pinned").set(isPinned);
+            
+          }
+
           btnAddNoteClick(e) {
-              //console.log(this.$.pinned.value);
+              
               firebase.database().ref("notes").push({
                   title: this.$.title.value,
                   description: this.$.description.value,
                   due_date: this.$.duedate.value,
-                  pinned: false,
+                  pinned: isPinned,
                   created_date: firebase.database.ServerValue.TIMESTAMP
               })
           }
@@ -145,25 +258,26 @@
                   console.log(snap.val())
               );
 
-              this.$.btn.addEventListener("click", function() {
-                  alert("hello");
-              });
+              // this.$.btn.addEventListener("click", function() {
+              //     alert("hello");
+              // });
 
-              this.$.addnote.addEventListener("click", function() {
-                  firebase.database().ref("notes").push(
-                      {
-                          title: "From backend",
-                          description: "backend description",
-                          due_date: 321321,
-                          created_date: 421421,
-                          pinned: true
-                      }
-                  )
-              });
+              // this.$.addnote.addEventListener("click", ()=> {
+              //     firebase.database().ref("notes").push(
+              //         {
+              //             title: this.$.noteTitle.value,
+              //             description: "backend description",
+              //             due_date: 321321,
+              //             created_date: 421421,
+              //             pinned: true
+              //         }
+              //     )
+              // });
 
           }
       }
 
       window.customElements.define(TodoApp.is, TodoApp);
+      
   </script>
 </dom-module>
