@@ -55,14 +55,11 @@
     <button id="addnote">Add note from backend</button>
     <br><br>
     FORMULAR:
-    <form>
-      Title: <input type="text" name="title"> <br>
-      <textarea name="description" rows="10" cols="30"> Description here... </textarea> <br>
-      <input type="date" name="duedate"> <br>
-      <input type="checkbox" name="pinned" value="IsPinned"> Pinned <br>
+    Title: <input type="text" name="title" id="title"> <br>
+    <textarea name="description" rows="10" cols="30" id="description"> Description here... </textarea> <br>
+    <input type="date" name="duedate" id="duedate"> <br>
 
-      <button type="button" name="submit" on-tap="btnAddNoteClick">Add note</button>
-    </form>
+    <button type="button" name="submit" on-tap="btnAddNoteClick">Add note</button>
 
 
     <br><br><br><br>
@@ -90,7 +87,7 @@
           Description: [[item.description]] <br>
           Due_date: [[item.due_date]] <br>
           Created_data: [[item.created_date]] <br>
-          Is_pinned: [[item.pinned]]
+          Is_pinned: [[item.pinned]] <br>
           key: [[item.$key]] <br> 
           <br> 
           <button on-tap="btnClick">Delete note from backend </button> 
@@ -132,7 +129,14 @@
           }
 
           btnAddNoteClick(e) {
-              console.log(e);
+              //console.log(this.$.pinned.value);
+              firebase.database().ref("notes").push({
+                  title: this.$.title.value,
+                  description: this.$.description.value,
+                  due_date: this.$.duedate.value,
+                  pinned: false,
+                  created_date: firebase.database.ServerValue.TIMESTAMP
+              })
           }
 
           connectedCallback() {
