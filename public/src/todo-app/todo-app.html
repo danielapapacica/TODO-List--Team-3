@@ -1,6 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <!--<script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>-->
 
 <link rel="import" href="../my-element.html">
@@ -51,6 +54,42 @@
     <br>
     <my-element></my-element>
     <paper-button raised class="pink">link</paper-button>
+
+    <firebase-app
+            auth-domain="todo-list-team3.firebaseapp.com"
+            database-url="https://todo-list-team3.firebaseio.com"
+            api-key="AIzaSyB1AIUn2_IrLzr_DV6XK043uhtOAdg5anU"
+            storage-bucket="todo-list-team3.appspot.com"
+            messaging-sender-id="570026971271">
+    </firebase-app>
+    <firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError">
+    </firebase-auth>
+    <br>
+
+    <firebase-document path="todos/1234" data="{{myDoc}}">
+      [[myDoc.name]] <br>
+
+      <firebase-query path="todos" data="{{myTodos}}">
+
+        <template is="dom-repeat" items="[[myTodos]]">
+          [[item.name]] <br>
+        </template>
+      </firebase-query>
+    </firebase-document>
+
+    <!--<script src="https://www.gstatic.com/firebasejs/5.0.1/firebase.js"></script>-->
+    <!--<script>-->
+        <!--// Initialize Firebase-->
+        <!--var config = {-->
+            <!--apiKey: "AIzaSyB1AIUn2_IrLzr_DV6XK043uhtOAdg5anU",-->
+            <!--authDomain: "todo-list-team3.firebaseapp.com",-->
+            <!--databaseURL: "https://todo-list-team3.firebaseio.com",-->
+            <!--projectId: "todo-list-team3",-->
+            <!--storageBucket: "todo-list-team3.appspot.com",-->
+            <!--messagingSenderId: "570026971271"-->
+        <!--};-->
+        <!--firebase.initializeApp(config);-->
+    <!--</script>-->
   </template>
 
   <script>
@@ -67,6 +106,9 @@
 
       connectedCallback() {
           super.connectedCallback();
+          firebase.database().ref("todos").on("value", (snap) =>
+              console.log(snap.val())
+          )
           this.$.btn.addEventListener("click", function() {
               alert("hello");
           });
