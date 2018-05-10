@@ -1,0 +1,143 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<!--<script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>-->
+
+<link rel="import" href="../my-element.html">
+
+<dom-module id="todo-app">
+  <template>
+    <style is="custom-style">
+      #container {
+        display: flex;
+      }
+      paper-button {
+        font-family: 'Roboto', 'Noto', sans-serif;
+        font-weight: normal;
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+      }
+      paper-button.pink {
+        color: var(--paper-pink-a200);
+        --paper-button-ink-color: var(--paper-pink-a200);
+      }
+      paper-button.pink:hover {
+        background-color: var(--paper-pink-100);
+      }
+      paper-button.indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+          background-color: var(--paper-pink-a200) !important;
+          color: white !important;
+        };
+      }
+      paper-button.indigo:hover {
+        background-color: var(--paper-indigo-400);
+      }
+      paper-button.green {
+        background-color: var(--paper-green-500);
+        color: white;
+      }
+      paper-button.green[active] {
+        background-color: var(--paper-red-500);
+      }
+      paper-button.disabled {
+        color: white;
+      }
+    </style>
+    <h2>Hello</h2>
+    <button id="btn">Btn</button>
+    <button id="addnote">Add note from backend</button>
+    <br>
+    <my-element></my-element>
+    <paper-button raised class="pink">link</paper-button>
+
+    <firebase-app
+            auth-domain="todo-list-team3.firebaseapp.com"
+            database-url="https://todo-list-team3.firebaseio.com"
+            api-key="AIzaSyB1AIUn2_IrLzr_DV6XK043uhtOAdg5anU"
+            storage-bucket="todo-list-team3.appspot.com"
+            messaging-sender-id="570026971271">
+    </firebase-app>
+
+    <firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError">
+    </firebase-auth>
+    <br>
+
+    <firebase-document path="notes" data="{{myDoc}}">
+      <!--[[myDoc.name]] <br>-->
+
+      <firebase-query path="notes" data="{{myTodos}}">
+
+        <template is="dom-repeat" items="[[myTodos]]">
+          Title: [[item.title]] <br>
+          Description: [[item.description]] <br>
+          Due_date: [[item.due_date]] <br>
+          Created_data: [[item.created_date]] <br>
+          Is_pinned: [[item.pinned]]
+
+          <br><br>
+        </template>
+      </firebase-query>
+    </firebase-document>
+
+    <!--<script src="https://www.gstatic.com/firebasejs/5.0.1/firebase.js"></script>-->
+    <!--<script>-->
+        <!--// Initialize Firebase-->
+        <!--var config = {-->
+            <!--apiKey: "AIzaSyB1AIUn2_IrLzr_DV6XK043uhtOAdg5anU",-->
+            <!--authDomain: "todo-list-team3.firebaseapp.com",-->
+            <!--databaseURL: "https://todo-list-team3.firebaseio.com",-->
+            <!--projectId: "todo-list-team3",-->
+            <!--storageBucket: "todo-list-team3.appspot.com",-->
+            <!--messagingSenderId: "570026971271"-->
+        <!--};-->
+        <!--firebase.initializeApp(config);-->
+    <!--</script>-->
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class TodoApp extends Polymer.Element {
+      static get is() { return 'todo-app'; }
+
+      constructor () {
+          super();
+      }
+
+      connectedCallback() {
+          super.connectedCallback();
+          firebase.database().ref("notes").on("value", (snap) =>
+              console.log(snap.val())
+          );
+
+          this.$.btn.addEventListener("click", function() {
+              alert("hello");
+          });
+
+          this.$.addnote.addEventListener("click", function() {
+              firebase.database().ref("notes").push(
+                  {
+                      title: "From backend",
+                      description: "backend description",
+                      due_date: 321321,
+                      created_date: 421421,
+                      pinned: true
+                  }
+              )
+          });
+
+
+      }
+    }
+
+    window.customElements.define(TodoApp.is, TodoApp);
+  </script>
+</dom-module>
