@@ -82,15 +82,15 @@
 
       <firebase-query path="notes" data="{{myTodos}}">
 
-        <template is="dom-repeat" items="[[myTodos]]">
+        <template is="dom-repeat" items="[[myTodos]]" sort="_sort">
           Title: [[item.title]] <br>
           Description: [[item.description]] <br>
           Due_date: [[item.due_date]] <br>
-          Created_data: [[item.created_date]] <br>
+          Created_date: [[item.created_date]] <br>
           Is_pinned: [[item.pinned]] <br>
           key: [[item.$key]] <br> 
           <br> 
-          <button on-tap="btnClick">Delete note from backend </button> 
+          <button on-tap="btnClick">Delete note from backend </button>
           <br><br><br><br>
           <br><br>
         </template>
@@ -123,9 +123,17 @@
           constructor () {
               super();
           }
-          btnClick(e) 
-          { 
+          btnClick(e) {
             firebase.database().ref("notes").child(e.model.item.$key).remove();
+          }
+
+          _sort(a, b) {
+              if (a.pinned == true && b.pinned == false)
+                  return -1;
+              if (a.pinned == false && b.pinned == true)
+                  return 1;
+              if (a.created_date === b.created_date) return 0;
+              return a.created_date > b.created_date ? -1 : 1;
           }
 
           btnAddNoteClick(e) {
