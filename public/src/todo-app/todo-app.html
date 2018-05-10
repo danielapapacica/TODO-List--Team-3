@@ -1,4 +1,5 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html"> 
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html"> 
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-styles/color.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
@@ -78,7 +79,10 @@
           Due_date: [[item.due_date]] <br>
           Created_data: [[item.created_date]] <br>
           Is_pinned: [[item.pinned]]
-
+          key: [[item.$key]] <br> 
+          <br> 
+          <button on-tap="btnClick">Delete note from backend </button> 
+          <br><br><br><br>
           <br><br>
         </template>
       </firebase-query>
@@ -104,12 +108,17 @@
        * @customElement
        * @polymer
        */
-      class TodoApp extends Polymer.Element {
+      class TodoApp extends Polymer.GestureEventListeners(Polymer.Element)  {
           static get is() { return 'todo-app'; }
 
           constructor () {
               super();
           }
+          btnClick(e) 
+          { 
+            firebase.database().ref("notes").child(e.model.item.$key).remove(); 
+ 
+          } 
 
           connectedCallback() {
               super.connectedCallback();
