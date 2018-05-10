@@ -51,6 +51,7 @@
     </style>
     <h2>Hello</h2>
     <button id="btn">Btn</button>
+    <button id="addnote">Add note from backend</button>
     <br>
     <my-element></my-element>
     <paper-button raised class="pink">link</paper-button>
@@ -66,13 +67,19 @@
     </firebase-auth>
     <br>
 
-    <firebase-document path="todos/1234" data="{{myDoc}}">
-      [[myDoc.name]] <br>
+    <firebase-document path="notes" data="{{myDoc}}">
+      <!--[[myDoc.name]] <br>-->
 
-      <firebase-query path="todos" data="{{myTodos}}">
+      <firebase-query path="notes" data="{{myTodos}}">
 
         <template is="dom-repeat" items="[[myTodos]]">
-          [[item.name]] <br>
+          Title: [[item.title]] <br>
+          Description: [[item.description]] <br>
+          Due_date: [[item.due_date]] <br>
+          Created_data: [[item.created_date]] <br>
+          Is_pinned: [[item.pinned]]
+
+          <br><br>
         </template>
       </firebase-query>
     </firebase-document>
@@ -106,11 +113,16 @@
 
       connectedCallback() {
           super.connectedCallback();
-          firebase.database().ref("todos").on("value", (snap) =>
+          firebase.database().ref("notes").on("value", (snap) =>
               console.log(snap.val())
-          )
+          );
+
           this.$.btn.addEventListener("click", function() {
               alert("hello");
+          });
+
+          this.$.addnote.addEventListener("click", function() {
+              alert("todo add in database note");
           });
       }
     }
