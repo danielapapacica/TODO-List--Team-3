@@ -63,6 +63,7 @@
             storage-bucket="todo-list-team3.appspot.com"
             messaging-sender-id="570026971271">
     </firebase-app>
+
     <firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError">
     </firebase-auth>
     <br>
@@ -122,8 +123,18 @@
           });
 
           this.$.addnote.addEventListener("click", function() {
-              alert("todo add in database note");
+              firebase.database().ref("notes").push(
+                  {
+                      title: "From backend",
+                      description: "backend description",
+                      due_date: 321321,
+                      created_date: 421421,
+                      pinned: true
+                  }
+              )
           });
+
+
       }
     }
 

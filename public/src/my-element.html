@@ -1,5 +1,13 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
 <dom-module id="my-element">
     <template>
         <style>
@@ -16,13 +24,30 @@
                 @apply --div-mixin;
             }
         </style>
-        <template is="dom-repeat" items="[[myText]]">
+
+<firebase-app
+  auth-domain="todo-list-team3.firebaseapp.com"
+  database-url="https://todo-list-team3.firebaseio.com"
+  api-key="AIzaSyB1AIUn2_IrLzr_DV6XK043uhtOAdg5anU"
+  storage-bucket="todo-list-team3.appspot.com"
+  messaging-sender-id="570026971271">
+</firebase-app>
+
+<firebase-document document path="todos/1234" data="{{myDoc}}" ></firebase-document>
+<firebase-query document path="todos" data="{{myTodos}}"></firebase-query>
+[[myDoc, name]]
+
+
+    <template is="dom-repeat" items="[[myText]]">
             id: [[item.id]] title: [[item.title]] description: [[item.description]] <br>
         </template>
 
         <button type="button" id="btn">Delete last item</button>
+
         <button type="button" id="addbtn">Add item</button>
+
     </template>
+
     <script>
         class MyElement extends Polymer.Element {
             static get is() { return 'my-element'; }
@@ -33,9 +58,16 @@
 
             connectedCallback() {
                 super.connectedCallback();
+
+                firebase.database().ref("todos").on("value", (snap)=>{
+                    console.log(snap.val)
+                    this.myData=snap.val()
+                })
+
                 this.$.btn.addEventListener("click", () => {
                     this.pop("myText");
                 });
+
                 this.$.addbtn.addEventListener("click", () => {
                     this.push("myText", {
                             id: 5,
@@ -44,6 +76,7 @@
                         }
                     );
                 })
+
             }
 
             static get properties() {
@@ -63,7 +96,12 @@
                                 id: 3,
                                 title: "Third title",
                                 description: "Third description"
+                            },{
+                                id: 4,
+                                title: "Fourth title",
+                                description: "Fourth description"
                             }
+
                         ]
                     }
                 }
