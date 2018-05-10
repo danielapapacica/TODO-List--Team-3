@@ -63,7 +63,6 @@
             storage-bucket="todo-list-team3.appspot.com"
             messaging-sender-id="570026971271">
     </firebase-app>
-
     <firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError">
     </firebase-auth>
     <br>
@@ -87,57 +86,56 @@
 
     <!--<script src="https://www.gstatic.com/firebasejs/5.0.1/firebase.js"></script>-->
     <!--<script>-->
-        <!--// Initialize Firebase-->
-        <!--var config = {-->
-            <!--apiKey: "AIzaSyB1AIUn2_IrLzr_DV6XK043uhtOAdg5anU",-->
-            <!--authDomain: "todo-list-team3.firebaseapp.com",-->
-            <!--databaseURL: "https://todo-list-team3.firebaseio.com",-->
-            <!--projectId: "todo-list-team3",-->
-            <!--storageBucket: "todo-list-team3.appspot.com",-->
-            <!--messagingSenderId: "570026971271"-->
-        <!--};-->
-        <!--firebase.initializeApp(config);-->
+    <!--// Initialize Firebase-->
+    <!--var config = {-->
+    <!--apiKey: "AIzaSyB1AIUn2_IrLzr_DV6XK043uhtOAdg5anU",-->
+    <!--authDomain: "todo-list-team3.firebaseapp.com",-->
+    <!--databaseURL: "https://todo-list-team3.firebaseio.com",-->
+    <!--projectId: "todo-list-team3",-->
+    <!--storageBucket: "todo-list-team3.appspot.com",-->
+    <!--messagingSenderId: "570026971271"-->
+    <!--};-->
+    <!--firebase.initializeApp(config);-->
     <!--</script>-->
   </template>
 
   <script>
-    /**
-     * @customElement
-     * @polymer
-     */
-    class TodoApp extends Polymer.Element {
-      static get is() { return 'todo-app'; }
+      /**
+       * @customElement
+       * @polymer
+       */
+      class TodoApp extends Polymer.Element {
+          static get is() { return 'todo-app'; }
 
-      constructor () {
-          super();
+          constructor () {
+              super();
+          }
+
+          connectedCallback() {
+              super.connectedCallback();
+              firebase.database().ref("notes").on("value", (snap) =>
+                  console.log(snap.val())
+              );
+
+              this.$.btn.addEventListener("click", function() {
+                  alert("hello");
+              });
+
+              this.$.addnote.addEventListener("click", function() {
+                  firebase.database().ref("notes").push(
+                      {
+                          title: "From backend",
+                          description: "backend description",
+                          due_date: 321321,
+                          created_date: 421421,
+                          pinned: true
+                      }
+                  )
+              });
+
+          }
       }
 
-      connectedCallback() {
-          super.connectedCallback();
-          firebase.database().ref("notes").on("value", (snap) =>
-              console.log(snap.val())
-          );
-
-          this.$.btn.addEventListener("click", function() {
-              alert("hello");
-          });
-
-          this.$.addnote.addEventListener("click", function() {
-              firebase.database().ref("notes").push(
-                  {
-                      title: "From backend",
-                      description: "backend description",
-                      due_date: 321321,
-                      created_date: 421421,
-                      pinned: true
-                  }
-              )
-          });
-
-
-      }
-    }
-
-    window.customElements.define(TodoApp.is, TodoApp);
+      window.customElements.define(TodoApp.is, TodoApp);
   </script>
 </dom-module>
