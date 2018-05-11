@@ -102,6 +102,10 @@
         background-color: var(--paper-green-500);
         color: white;
       }
+      paper-button.red {
+          background-color: var(--paper-green-500);
+          color: red;
+      }
       paper-button.green[active] {
         background-color: var(--paper-red-500);
       }
@@ -269,7 +273,7 @@
               </template>
 
           <template is="dom-if" if="{{_isEqualTo(item.pinned, 'true')}}">
-              <paper-button raised class="green" id="unpinBtn" type="button" name="unpin" on-tap="unpinBtnClick">Unpin</button>
+              <paper-button raised class="red" id="unpinBtn" type="button" name="unpin" on-tap="unpinBtnClick">Unpin</button>
          </template>
 
           
