@@ -5,6 +5,9 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
 <!--<script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>-->
 
 <link rel="import" href="../my-element.html">
@@ -133,9 +136,17 @@
     <textarea name="description" rows="10" cols="30" id="description">Description here... </textarea> <br>
     Due date: <input type="date" name="duedate" id="duedate"> <br>
     <!-- <input type="checkbox" name="pinned" id="pin" onclick="pinClick()"> Pin <br> -->
-    <button  type="button" name="pin" on-tap="pinBtnClick">Pin</button>
+    <!--<button  type="button" name="pin" on-tap="pinBtnClick">Pin</button>-->
+
     <br>
-    <button  type="button" name="submit" on-tap="btnAddNoteClick">Add note</button>
+
+      Pinned:
+        <paper-radio-group selected="{{radioSelected}}">
+            <paper-radio-button name="false">No</paper-radio-button>
+            <paper-radio-button name="true">Yes</paper-radio-button>
+        </paper-radio-group>
+        <br>
+      <button  type="button" name="submit" on-tap="btnAddNoteClick">Add note</button>
     </div>
     <br>
     
@@ -168,7 +179,7 @@
           <!-- Created_date:  -->
           <div id="noteCreatedDate">[[item.created_date]] </div>
           <!-- Is_pinned:  -->
-          <!-- [[item.pinned]] <br> -->
+           [[item.pinned]] <br>
           <!-- key: [[item.$key]] <br> -->
           <div id="noteButtons">
           <button id="pinBtn" type="button" name="notePin" on-tap="inNotePinBtnClick">Pin</button> 
@@ -208,6 +219,7 @@
 
           constructor () {
               super();
+              this.radioSelected = false;
           }
         
           btnClick(e) 
@@ -242,12 +254,15 @@
           }
 
           btnAddNoteClick(e) {
+              //console.log(this.radioSelected);
+
+              //console.log(document.querySelector('.pinn').checked);
               
               firebase.database().ref("notes").push({
                   title: this.$.title.value,
                   description: this.$.description.value,
                   due_date: this.$.duedate.value,
-                  pinned: isPinned,
+                  pinned: this.radioSelected,
                   created_date: firebase.database.ServerValue.TIMESTAMP
               })
           }
