@@ -229,9 +229,9 @@
           }
 
           _sort(a, b) {
-              if (a.pinned === true && b.pinned === false)
+              if (a.pinned == true && b.pinned == false)
                   return -1;
-              if (a.pinned === false && b.pinned === true)
+              if (a.pinned == false && b.pinned == true)
                   return 1;
               if (a.created_date === b.created_date) return 0;
               return a.created_date > b.created_date ? -1 : 1;
