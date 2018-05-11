@@ -170,6 +170,7 @@
         <br>
         <paper-button type="button" name="cancel" on-tap="btnCancelClick">Cancel</paper-button>
         <paper-button  type="button" name="submit" on-tap="btnAddNoteClick">Add note</paper-button>
+      <!--<button type="button" name="submit" on-tap="btnAddNoteClick">Add note</button>-->
     </div>
     </div>
     
@@ -192,7 +193,7 @@
 
       <firebase-query  path="notes" data="{{myTodos}}">
 
-          <template id="domShow" is="dom-repeat" items="[[myTodos]]" sort="_sort">
+          <template id="domShow" is="dom-repeat" items="[[myTodos]]" sort="[[_sort(myTodos.*)]]">
             <div class="noteItem">
           <!-- Title:  -->
           <div id="noteTitle">[[item.title]] </div>
@@ -206,11 +207,16 @@
            [[item.pinned]] <br>
           <!-- key: [[item.$key]] <br> -->
           <div id="noteButtons">
-          <button id="pinBtn" type="button" name="notePin" on-tap="inNotePinBtnClick">Pin</button> 
+              <template is="dom-if" if="{{_isEqualTo(item.pinned, 'false')}}">
+                  <button id="pinBtn" type="button" name="notePin" on-tap="inNotePinBtnClick">Pin</button>
+              </template>
+
+          <template is="dom-if" if="{{_isEqualTo(item.pinned, 'true')}}">
+              <button id="unpinBtn" type="button" name="unpin" on-tap="unpinBtnClick">Unpin</button>
+         </template>
+
           
-          <button id="unpinBtn" type="button" name="unpin" on-tap="unpinBtnClick">Unpin</button>
-          
-          <button id="deleteBtn" on-tap="btnClick">Delete Item</button>
+             <button id="deleteBtn" on-tap="btnClick">Delete Item</button>
           </div>
         </div>
         </template>
@@ -237,16 +243,13 @@
        * @customElement
        * @polymer
        */
-      let isPinned = false;
-      
-      
-
+      let isPinned = "false";
       class TodoApp extends Polymer.GestureEventListeners(Polymer.Element)  {
           static get is() { return 'todo-app'; }
 
           constructor () {
               super();
-              this.radioSelected = false;
+              this.radioSelected = "false";
           }
           
           newPopClick()
@@ -259,35 +262,47 @@
             this.$.noteForm.style.display='none';
             this.$.wholePageForm.style.display='none';
           }
+
+          //let isPinned = "false";
+
+          _isEqualTo(pin, string) {
+              return pin == string;
+          }
+        
           btnClick(e) 
-          { 
+          {
+              console.log(e);
             firebase.database().ref("notes").child(e.model.item.$key).remove();
-              this.$.domShow.render();
+              //this.$.domShow.render();
           }
 
-          _sort(a, b) {
-              if (a.pinned == true && b.pinned == false)
-                  return -1;
-              if (a.pinned == false && b.pinned == true)
-                  return 1;
-              if (a.created_date === b.created_date) return 0;
-              return a.created_date > b.created_date ? -1 : 1;
-        }
+          _sort(items){
+              return (a, b) => {
+                  if (a.pinned == "true" && b.pinned == "false")
+                      return -1;
+                  if (a.pinned == "false" && b.pinned == "true")
+                      return 1;
+                  if (a.created_date === b.created_date) return 0;
+                  return a.created_date > b.created_date ? -1 : 1;
+              };
+
+          }
+
 
           pinBtnClick(e)
           {
-            isPinned = true;
+            isPinned = "true";
           }
           unpinBtnClick(e)
           {
-            isPinned=false;
+            isPinned = "false";
             firebase.database().ref("notes").child(e.model.item.$key).child("pinned").set(isPinned);
             this.$.domShow.render();
           }
 
           inNotePinBtnClick(e)
           {
-            isPinned = true;
+            isPinned = "true";
             firebase.database().ref("notes").child(e.model.item.$key).child("pinned").set(isPinned);
             this.$.domShow.render();
             
@@ -318,22 +333,6 @@
                   console.log(snap.val())
               )
               this.$.domShow.render();
-
-              // this.$.btn.addEventListener("click", function() {
-              //     alert("hello");
-              // });
-
-              // this.$.addnote.addEventListener("click", ()=> {
-              //     firebase.database().ref("notes").push(
-              //         {
-              //             title: this.$.noteTitle.value,
-              //             description: "backend description",
-              //             due_date: 321321,
-              //             created_date: 421421,
-              //             pinned: true
-              //         }
-              //     )
-              // });
 
           }
       }
