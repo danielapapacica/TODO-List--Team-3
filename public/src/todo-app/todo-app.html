@@ -15,6 +15,62 @@
 <dom-module id="todo-app">
   <template>
     <style is="custom-style">
+
+
+      .wordart {
+          font-family: Arial, sans-serif;
+          font-size: 80px;
+          font-weight: bold;
+          position: relative;
+          z-index: 1;
+          display: inline-block;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .wordart.purple {
+        
+        margin: 5px;
+          text-align: center;
+          width: 100%;
+          padding: 15px 0px;
+          background: -webkit-linear-gradient(rgb(212, 70, 212), rgba(231, 209, 7, 0.808));
+
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+
+          -webkit-text-stroke: 1px black;
+
+          text-shadow:  
+             5px 1px 0 rgb(224, 19, 156);
+        
+            font-weight: 1000; 
+            transform: skew(0, -10deg) scale(1, 1.5);
+            -webkit-transform: skew(0, -10deg) scale(1, 1.5);
+            -moz-transform: skew(0, -10deg) scale(1, 1.5);
+            -o-transform: skew(0, -10deg) scale(1, 1.5);
+            -ms-transform: skew(0, -10deg) scale(1, 1.5);
+        }
+
+        .wordart.purple.body{
+          font-size: 30px;
+          text-shadow:  
+             1px 1px 0 rgb(224, 19, 156);
+        }
+
+
+        .wordart.nice {
+    -webkit-text-stroke: 1px black;
+    font-family:'Courier New', Courier, monospace;
+    font-size: 20px;
+    color: rgb(212, 70, 212);
+    -webkit-text-stroke: 0.01em #aa0069;
+    filter: progid:DXImageTransform.Microsoft.Glow(Color=#aa0071,Strength=1);
+    text-shadow: 0.15em 0px rgba(231, 209, 7, 0.808)3;
+    }
+
+
+      
       #container {
         display: flex;
       }
@@ -67,6 +123,7 @@
         left: 0;
       }
       #noteForm {
+        z-index: 1000;
         /* visibility: hidden; */
         display: none;
         /* margin: 0; */
@@ -85,7 +142,7 @@
         
         
       } 
-       .noteItem {
+      .noteItem {
         display: inline-block;
         margin: 0px 5px 5px 0px;
         border: 1px solid green;
@@ -104,6 +161,9 @@
          max-width: inherit;
          height: auto;
          background-color: rgb(114, 226, 114);
+         width: 100%;
+         text-align: center; 
+         
          overflow:auto;
        }
        .noteItem #noteDescr {
@@ -142,21 +202,18 @@
        }
     </style>
 
+    
+
+<h2 class="wordart purple" class="text">TO DO List</h2>
 
     
-    <!-- <button id="btn">Btn</button>
-    <button id="addnote">Add note from backend</button>
-    <br><br>
-    <br>2
-    <br><br> -->
-    
-    <paper-button id="newItemPop" on-tap="newPopClick">New Item</paper-button>
-    <br>
+    <br><br><br><br><br><br>
 
     <div id="wholePageForm">
     <div id="noteForm">
       
-      <h4>Add a new list item</h4>
+        <h4 class="wordart nice">Add a new list item</h4>
+        <br>
       <input type="text" name="title" id="title" placeholder="Item Title"> <br>
       <textarea name="description" rows="10" cols="30" id="description" placeholder="Description here.."></textarea> <br>
       Due date: <input type="date" name="duedate" id="duedate"> <br>
@@ -196,32 +253,36 @@
           <template id="domShow" is="dom-repeat" items="[[myTodos]]" sort="[[_sort(myTodos.*)]]">
             <div class="noteItem">
           <!-- Title:  -->
-          <div id="noteTitle">[[item.title]] </div>
+          <div id="noteTitle" class="wordart nice">[[item.title]] </div>
           <!-- Description:  -->
           <div id="noteDescr">[[item.description]] </div>
           <!-- Due_date: -->
           <div id="noteDueDate">[[item.due_date]] </div>
           <!-- Created_date:  -->
-          <div id="noteCreatedDate">[[item.created_date]] </div>
+          <!-- <div id="noteCreatedDate">[[item.created_date]] </div> -->
           <!-- Is_pinned:  -->
-           [[item.pinned]] <br>
+           <!-- [[item.pinned]] <br> -->
           <!-- key: [[item.$key]] <br> -->
           <div id="noteButtons">
               <template is="dom-if" if="{{_isEqualTo(item.pinned, 'false')}}">
-                  <button id="pinBtn" type="button" name="notePin" on-tap="inNotePinBtnClick">Pin</button>
+                  <paper-button raised class="green" id="pinBtn" type="button" name="notePin" on-tap="inNotePinBtnClick">Pin</button>
               </template>
 
           <template is="dom-if" if="{{_isEqualTo(item.pinned, 'true')}}">
-              <button id="unpinBtn" type="button" name="unpin" on-tap="unpinBtnClick">Unpin</button>
+              <paper-button raised class="green" id="unpinBtn" type="button" name="unpin" on-tap="unpinBtnClick">Unpin</button>
          </template>
 
           
-             <button id="deleteBtn" on-tap="btnClick">Delete Item</button>
+             <paper-button raised class="green" id="deleteBtn" on-tap="btnClick">Delete Item</button>
           </div>
         </div>
         </template>
       </firebase-query>
+
+     
     </firebase-document>
+
+
     
     <!--<script src="https://www.gstatic.com/firebasejs/5.0.1/firebase.js"></script>-->
     <!--<script>-->
@@ -236,6 +297,10 @@
     <!--};-->
     <!--firebase.initializeApp(config);-->
     <!--</script>-->
+
+<br><br>
+    <paper-button raised class="green" id="newItemPop" on-tap="newPopClick">New note</paper-button>
+
   </template>
 
   <script>
