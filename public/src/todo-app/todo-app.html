@@ -168,7 +168,7 @@
 
       <firebase-query  path="notes" data="{{myTodos}}">
 
-          <template is="dom-repeat" items="[[myTodos]]" sort="_sort">
+          <template id="domShow" is="dom-repeat" items="[[myTodos]]" sort="_sort">
             <div class="noteItem">
           <!-- Title:  -->
           <div id="noteTitle">[[item.title]] </div>
@@ -225,15 +225,16 @@
           btnClick(e) 
           { 
             firebase.database().ref("notes").child(e.model.item.$key).remove();
+              this.$.domShow.render();
           }
 
           _sort(a, b) {
-              if (a.pinned == true && b.pinned == false)
+              if (a.pinned === true && b.pinned === false)
                   return -1;
-              if (a.pinned == false && b.pinned == true)
+              if (a.pinned === false && b.pinned === true)
                   return 1;
-             if (a.created_date === b.created_date) return 0;
-                  return a.created_date > b.created_date ? -1 : 1;
+              if (a.created_date === b.created_date) return 0;
+              return a.created_date > b.created_date ? -1 : 1;
         }
 
           pinBtnClick(e)
@@ -244,12 +245,14 @@
           {
             isPinned=false;
             firebase.database().ref("notes").child(e.model.item.$key).child("pinned").set(isPinned);
+            this.$.domShow.render();
           }
 
           inNotePinBtnClick(e)
           {
             isPinned = true;
             firebase.database().ref("notes").child(e.model.item.$key).child("pinned").set(isPinned);
+            this.$.domShow.render();
             
           }
 
@@ -264,14 +267,16 @@
                   due_date: this.$.duedate.value,
                   pinned: this.radioSelected,
                   created_date: firebase.database.ServerValue.TIMESTAMP
-              })
+              });
+              this.$.domShow.render();
           }
 
           connectedCallback() {
               super.connectedCallback();
               firebase.database().ref("notes").on("value", (snap) =>
                   console.log(snap.val())
-              );
+              )
+              this.$.domShow.render();
 
               // this.$.btn.addEventListener("click", function() {
               //     alert("hello");
