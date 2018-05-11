@@ -52,16 +52,37 @@
       paper-button.disabled {
         color: white;
       }
-
+      
+      #wholePageForm {
+        display: none;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+        border: 0px;
+        position: absolute; 
+        top: 0; 
+        left: 0;
+      }
       #noteForm {
-        display: inline-block;
-        margin: 0px 5px 5px 0px;
+        /* visibility: hidden; */
+        display: none;
+        /* margin: 0; */
         border: 1px solid green;
         padding: 10px;
         border-radius: 15px;
         width:auto;
         height:auto;
         overflow:auto;
+        box-sizing: border-box;
+        position:absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%); 
+        background-color: white;
+        
         
       } 
        .noteItem {
@@ -129,26 +150,29 @@
     <br>2
     <br><br> -->
     
-    <div id="noteForm">
-      
-    <h4>Add a new list item</h4>
-    <input type="text" name="title" id="title" value="Item Title"> <br>
-    <textarea name="description" rows="10" cols="30" id="description">Description here... </textarea> <br>
-    Due date: <input type="date" name="duedate" id="duedate"> <br>
-    <!-- <input type="checkbox" name="pinned" id="pin" onclick="pinClick()"> Pin <br> -->
-    <!--<button  type="button" name="pin" on-tap="pinBtnClick">Pin</button>-->
-
+    <paper-button id="newItemPop" on-tap="newPopClick">New Item</paper-button>
     <br>
 
+    <div id="wholePageForm">
+    <div id="noteForm">
+      
+      <h4>Add a new list item</h4>
+      <input type="text" name="title" id="title" placeholder="Item Title"> <br>
+      <textarea name="description" rows="10" cols="30" id="description" placeholder="Description here.."></textarea> <br>
+      Due date: <input type="date" name="duedate" id="duedate"> <br>
+      <!-- <input type="checkbox" name="pinned" id="pin" onclick="pinClick()"> Pin <br> -->
+      <!--<button  type="button" name="pin" on-tap="pinBtnClick">Pin</button>-->
       Pinned:
         <paper-radio-group selected="{{radioSelected}}">
             <paper-radio-button name="false">No</paper-radio-button>
             <paper-radio-button name="true">Yes</paper-radio-button>
         </paper-radio-group>
         <br>
-      <button  type="button" name="submit" on-tap="btnAddNoteClick">Add note</button>
+        <paper-button type="button" name="cancel" on-tap="btnCancelClick">Cancel</paper-button>
+        <paper-button  type="button" name="submit" on-tap="btnAddNoteClick">Add note</paper-button>
     </div>
-    <br>
+    </div>
+    
     
     <!-- <paper-button raised class="pink">link</paper-button> -->
 
@@ -192,7 +216,7 @@
         </template>
       </firebase-query>
     </firebase-document>
-
+    
     <!--<script src="https://www.gstatic.com/firebasejs/5.0.1/firebase.js"></script>-->
     <!--<script>-->
     <!--// Initialize Firebase-->
@@ -214,6 +238,9 @@
        * @polymer
        */
       let isPinned = false;
+      
+      
+
       class TodoApp extends Polymer.GestureEventListeners(Polymer.Element)  {
           static get is() { return 'todo-app'; }
 
@@ -221,7 +248,17 @@
               super();
               this.radioSelected = false;
           }
-        
+          
+          newPopClick()
+          {
+            this.$.wholePageForm.style.display = 'inline-block';
+            this.$.noteForm.style.display= 'inline-block';
+          }
+          btnCancelClick()
+          {
+            this.$.noteForm.style.display='none';
+            this.$.wholePageForm.style.display='none';
+          }
           btnClick(e) 
           { 
             firebase.database().ref("notes").child(e.model.item.$key).remove();
@@ -268,7 +305,11 @@
                   pinned: this.radioSelected,
                   created_date: firebase.database.ServerValue.TIMESTAMP
               });
+              
               this.$.domShow.render();
+              this.$.noteForm.display = 'none';
+              this.$.wholePageForm.display = 'none';
+              
           }
 
           connectedCallback() {
